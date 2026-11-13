@@ -1,0 +1,106 @@
+[
+  {
+    "label": "Comunidade universitária",
+    "courses": [
+      "Docente",
+      "Funcionário"
+    ]
+  },
+  {
+    "label": "Licenciaturas e Ciclo Básico em Medicina",
+    "courses": [
+      "Artes Visuais",
+      "Biologia",
+      "Bioquímica",
+      "Ciclo Básico em Medicina",
+      "Ciências da Educação",
+      "Comunicação, Cultura e Organizações",
+      "Design",
+      "Direção e Gestão Hoteleira",
+      "Economia",
+      "Educação Básica",
+      "Educação Física e Desporto",
+      "Enfermagem",
+      "Engenharia Biomédica",
+      "Engenharia Civil",
+      "Engenharia de Computadores",
+      "Engenharia Eletrónica e Telecomunicações",
+      "Engenharia Física e Computacional",
+      "Engenharia Informática",
+      "Estudos de Cultura",
+      "Gestão",
+      "Línguas e Relações Empresariais",
+      "Matemática",
+      "Psicologia"
+    ]
+  },
+  {
+    "label": "Mestrados",
+    "courses": [
+      "Mestrado em Agricultura Biológica e Desenvolvimento Rural",
+      "Mestrado em Atividade Física e Desporto",
+      "Mestrado em Biologia Aplicada",
+      "Mestrado em Bioquímica Aplicada",
+      "Mestrado em Ciências da Educação – Administração Educacional",
+      "Mestrado em Ciências da Educação – Inovação Pedagógica",
+      "Mestrado em Design",
+      "Mestrado em Design de Media Interativos",
+      "Mestrado em Educação e Desenvolvimento Comunitário",
+      "Mestrado em Educação Pré-Escolar e Ensino do 1º Ciclo do Ensino Básico",
+      "Mestrado em Engenharia Civil",
+      "Mestrado em Engenharia Eletrotécnica e de Computadores",
+      "Mestrado em Engenharia Informática",
+      "Mestrado em Ensino de Educação Física nos Ensinos Básico e Secundário",
+      "Mestrado em Ensino de Matemática no 3º Ciclo do Ensino Básico e no Secundário",
+      "Mestrado em Estudos em Enfermagem",
+      "Mestrado em Estudos Regionais e Locais",
+      "Mestrado em Gestão",
+      "Mestrado em Gestão Cultural",
+      "Mestrado em Gestão Hoteleira",
+      "Mestrado em Linguística: Sociedades e Culturas",
+      "Mestrado em Literatura, Cultura e Diversidade",
+      "Mestrado em Matemática, Estatística e Aplicações",
+      "Mestrado em Psicologia Clínica, da Saúde e Bem-Estar",
+      "Mestrado em Psicologia da Educação"
+    ]
+  },
+  {
+    "label": "Doutoramentos",
+    "courses": [
+      "Doutoramento em Ciências Biológicas",
+      "Doutoramento em Currículo e Inovação Pedagógica",
+      "Doutoramento em Engenharia Eletrotécnica",
+      "Doutoramento em Engenharia Informática",
+      "Doutoramento em Física",
+      "Doutoramento em Ilhas Atlânticas: História, Património e Quadro Jurídico Institucional",
+      "Doutoramento em Literaturas e Culturas Insulares",
+      "Doutoramento em Química"
+    ]
+  },
+  {
+    "label": "CTeSP — Cursos Técnicos Superiores Profissionais",
+    "courses": [
+      "CTeSP em Agricultura Biológica",
+      "CTeSP em Arquivos e Gestão da Informação",
+      "CTeSP em Cibersegurança e Redes",
+      "CTeSP em Construção Civil",
+      "CTeSP em Contabilidade e Fiscalidade",
+      "CTeSP em Cozinha e Produção Alimentar",
+      "CTeSP em Gestão do Alojamento",
+      "CTeSP em Gestão Energética e Ambiental",
+      "CTeSP em Guias da Natureza",
+      "CTeSP em Informação e Comercialização Turística",
+      "CTeSP em Informática de Gestão para o Turismo",
+      "CTeSP em Marketing Digital no Turismo",
+      "CTeSP em Promoção da Qualidade de Vida e do Bem Estar da Pessoa Idosa",
+      "CTeSP em Proteção Civil",
+      "CTeSP em Reabilitação Energética e Conservação de Edifícios",
+      "CTeSP em Redes e Sistemas Informáticos",
+      "CTeSP em Serviço Familiar e Comunitário",
+      "CTeSP em Sistemas Eletrónicos e Instalações Elétricas",
+      "CTeSP em Tecnologias Agroalimentares",
+      "CTeSP em Tecnologias e Programação de Sistemas de Informação",
+      "CTeSP em Treino Desportivo"
+    ]
+  }
+]

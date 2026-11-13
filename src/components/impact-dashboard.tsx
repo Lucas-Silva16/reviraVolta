@@ -1,0 +1,41 @@
+'use client';
+import Link from 'next/link';
+import { useCallback, useEffect, useState, useSyncExternalStore } from 'react';
+import { ArrowRight, BottleWine, Coins, Droplets, Flag, Leaf, RefreshCw, Sparkles } from 'lucide-react';
+import type { Impact } from '@/lib/refills';
+import { number, money } from '@/lib/format';
+import { api, useSession } from './session';
+
+export function CollectiveLake({ data }: { data: Impact }) {
+  if (data.variant !== 'B' || !('collective' in data)) return null;
+  const collective = data.collective;
+  return <section className="lake-card" aria-labelledby="lake-title" data-testid="collective-module"><div><span className="eyebrow">O TEU CURSO, NO MESMO PERCURSO</span><h2 id="lake-title">Gota a gota, um lago.</h2>{collective.visible ? <><p>O lago de <strong>{collective.course}</strong> cresce com os enchimentos dos participantes que veem este módulo.</p><div className="lake-total"><strong>≥ {number(collective.liters)} L</strong><span>de uma meta de {number(collective.goal)} L</span></div><progress max={collective.goal} value={Math.min(collective.liters, collective.goal)} aria-label="Progresso coletivo do curso"/><p className="fine-print">Total em intervalos de 5 L para reduzir a precisão pública. Inclui apenas o grupo com progresso coletivo; pode diminuir por eliminação ou retenção de dados.</p></> : <><p>Este espaço acompanha um objetivo partilhado, ao ritmo de cada pessoa.</p><div className="lake-protected"><Leaf size={18}/><span>O progresso só é mostrado após existirem pelo menos {collective.minimum} participantes distintos deste grupo no mesmo curso.</span></div><p className="fine-print">Até lá, os totais ficam protegidos. Não mostramos um nível de água fictício.</p></>}</div>{collective.visible && <div className="lake-visual" aria-hidden="true"><svg viewBox="0 0 320 240"><defs><clipPath id="lake-mask"><path d="M55 89c21-42 85-59 129-47 49 14 98 29 101 76 2 44-32 89-91 91-50 2-112 3-141-29-25-28-14-61 2-91Z"/></clipPath></defs><path d="M44 83c25-45 89-66 143-49 57 17 108 38 110 86 2 52-41 97-102 102-57 4-123-1-155-34-28-31-12-76 4-105Z" fill="var(--accent)"/><g clipPath="url(#lake-mask)"><rect x="20" y="30" width="290" height="200" fill="var(--surface)"/><rect className="lake-water" x="20" y={210 - Math.min(1, collective.liters / collective.goal) * 175} width="290" height="220" fill="var(--water)"/><path d="M70 130q20-12 40 0t40 0m35 40q20-12 40 0" stroke="var(--surface)" strokeWidth="3" fill="none" opacity={collective.liters / collective.goal > 0.5 ? 1 : 0}/></g><path d="M78 64l9-24 10 24m-5 140 9-25 10 25m133-124 9-25 10 25" fill="var(--primary)"/></svg><span>{number(Math.min(100, collective.liters / collective.goal * 100), 1)}% da meta coletiva</span></div>}</section>;
+}
+function subscribeGoal(callback: () => void) {
+  window.addEventListener('storage', callback); window.addEventListener('rv-goal', callback);
+  return () => { window.removeEventListener('storage', callback); window.removeEventListener('rv-goal', callback); };
+}
+function readGoal() { try { return localStorage.getItem('rv-personal-goal'); } catch { return null; } }
+function PersonalGoal({ liters }: { liters: number }) {
+  const stored = useSyncExternalStore(subscribeGoal, readGoal, () => null);
+  const [temporary, setTemporary] = useState<number | null>(null), [error, setError] = useState('');
+  const parsed = Number(stored), goal = temporary ?? (parsed >= 1 && parsed <= 1000 ? parsed : null);
+  function save(event: React.FormEvent) {
+    event.preventDefault(); const value = Number(new FormData(event.currentTarget as HTMLFormElement).get('goal'));
+    if (!Number.isFinite(value) || value < 1 || value > 1000) { setError('Escolhe uma meta entre 1 e 1000 L.'); return; }
+    setError(''); try { localStorage.setItem('rv-personal-goal', String(value)); window.dispatchEvent(new Event('rv-goal')); } catch { setTemporary(value); setError('Meta ativa nesta visita. O navegador não permite guardar a preferência.'); }
+  }
+  return <section className="goal-card"><div className="section-title-row"><span className="icon-square"><Flag size={22}/></span><span className="small-tag">AO TEU RITMO</span></div><h2>Uma meta tua. Uma escolha tua.</h2><p>Se te fizer sentido, escolhe um objetivo de litros acumulados. Podes mudá-lo ou retirá-lo quando quiseres.</p>{goal !== null && <div className="goal-progress"><div><strong>{number(liters)} <small>/ {number(goal)} L</small></strong><span>{number(Math.min(100, liters / goal * 100), 0)}%</span></div><progress value={Math.min(liters, goal)} max={goal} aria-label="Progresso para a tua meta pessoal"/>{liters >= goal && <p className="goal-complete"><CheckMark/> Chegaste à tua meta. Cada volta conta.</p>}</div>}<form onSubmit={save} className="goal-form"><label htmlFor="goal">A minha meta (L)<input id="goal" type="number" min="1" max="1000" step="1" required name="goal" key={goal ?? "none"} defaultValue={goal ?? 10}/></label><button className="button secondary" type="submit">{goal === null ? 'Definir meta' : 'Atualizar meta'}</button>{goal !== null && <button className="text-button" type="button" onClick={() => { setTemporary(null); try { localStorage.removeItem('rv-personal-goal'); window.dispatchEvent(new Event('rv-goal')); } catch {} }}>Retirar meta</button>}</form>{error && <p role="status" className="fine-print">{error}</p>}<p className="fine-print">Opcional. Guardada apenas neste navegador, sem envio ao servidor.</p></section>;
+}
+function CheckMark() { return <Sparkles size={16} aria-hidden="true"/>; }
+export function ImpactDashboard() {
+  const { csrf, error: sessionError } = useSession();
+  const [data, setData] = useState<Impact | null>(null), [error, setError] = useState('');
+  const refresh = useCallback(() => api<Impact>('/api/impacto').then(result => { setData(result); setError(''); }).catch(err => setError(err instanceof Error ? err.message : 'Não foi possível carregar.')), []);
+  useEffect(() => { if (csrf) { void refresh(); const onFocus = () => { void refresh(); }; window.addEventListener('focus', onFocus); return () => window.removeEventListener('focus', onFocus); } }, [csrf, refresh]);
+  if (error || sessionError) return <div className="error-message" role="alert">{error || sessionError}<button onClick={refresh}>Tentar novamente</button></div>;
+  if (!data) return <div className="loading-state" role="status"><span className="loader"/> A reunir as tuas voltas…</div>;
+  const milestone = [50, 25, 10, 5, 1].find(n => data.totalLiters >= n);
+  return <><div className="impact-stats"><article className="stat-card primary-stat"><Droplets size={23}/><span>Água registada por ti</span><strong>{number(data.totalLiters)} <small>L</small></strong><p>{data.refills} {data.refills === 1 ? 'enchimento registado' : 'enchimentos registados'}</p></article><article className="stat-card"><BottleWine size={23}/><span>Garrafas potencialmente evitadas</span><strong>{number(data.bottleEquivalents)}</strong><p>Equivalentes de 0,5 L · estimativa</p></article><article className="stat-card"><Coins size={23}/><span>Poupança potencial</span><strong>{money(data.estimatedEuros)}</strong><p>Estimativa de {money(data.pricePerLiter)} por litro</p></article></div><p className="estimation-note">Estas estimativas pressupõem a substituição de água comprada por água do enchedor. Não medimos compras evitadas, poupança efetiva ou redução de CO₂.</p><div className="impact-middle"><PersonalGoal liters={data.totalLiters}/><aside className="milestone-card"><span className="milestone-art"><SproutIcon/></span><span className="eyebrow">CADA VOLTA CONTA</span><h2>{milestone ? `Já chegaste aos ${milestone} L.` : 'O teu percurso começa aqui.'}</h2><p>{milestone ? 'Um marco construído pelos teus registos. Continua quando voltares a encher a garrafa, ao teu ritmo.' : 'O primeiro enchimento dá início ao teu histórico. Uma garrafa, muitas possibilidades.'}</p><Link className="button secondary" href="/">Registar enchimento <ArrowRight size={17}/></Link></aside></div><CollectiveLake data={data}/><div className="impact-bottom"><span><RefreshCw size={14}/> Histórico associado a este navegador.</span><Link href="/privacidade">Gerir os meus dados <ArrowRight size={14}/></Link></div></>;
+}
+function SproutIcon() { return <Leaf size={42} strokeWidth={1.3}/>; }

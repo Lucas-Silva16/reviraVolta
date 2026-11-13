@@ -1,0 +1,29 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Enchimento {
+  id               String   @id @db.Uuid
+  token_hash       String   @db.Char(64)
+  curso            String   @db.VarChar(120)
+  quantidade_litros Decimal  @db.Decimal(5, 2)
+  created_at       DateTime @default(now()) @db.Timestamptz(3)
+
+  @@index([token_hash])
+  @@index([curso])
+  @@index([created_at])
+  @@map("enchimentos")
+}
+
+// Estado técnico global do login, sem IPs, utilizadores ou dados de participantes.
+model AdminLoginThrottle {
+  id       Int        @id
+  attempts DateTime[] @db.Timestamptz(3)
+
+  @@map("admin_login_throttle")
+}

@@ -1,0 +1,63 @@
+{
+  "name": "reviravolta",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "24.x"
+  },
+  "scripts": {
+    "dev": "next dev --hostname 0.0.0.0",
+    "build": "prisma generate && next build",
+    "vercel-build": "npm run check:deploy && npm run build",
+    "check:deploy": "tsx scripts/check-deploy.ts",
+    "setup:vercel": "node scripts/setup-vercel.mjs",
+    "start": "next start --hostname 0.0.0.0",
+    "lint": "eslint .",
+    "typecheck": "next typegen && tsc --noEmit",
+    "test": "vitest run",
+    "test:integration": "node scripts/integration.mjs",
+    "test:e2e": "node scripts/integration.mjs --e2e",
+    "setup": "node scripts/setup.mjs",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate deploy",
+    "db:seed": "tsx prisma/seed.ts",
+    "db:retention": "tsx scripts/retention.ts",
+    "db:roles": "node scripts/db-roles.mjs",
+    "postinstall": "prisma generate",
+    "test:full": "node scripts/integration.mjs --all",
+    "db:local": "node scripts/local-postgres.mjs",
+    "postbuild": "node scripts/check-build.mjs"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.0.0",
+    "@prisma/client": "^7.0.0",
+    "@vercel/functions": "3.11.2",
+    "dotenv": "^17.2.3",
+    "lucide-react": "^0.577.0",
+    "next": "^16.0.0",
+    "pg": "^8.16.3",
+    "qrcode": "^1.5.4",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "server-only": "^0.0.1",
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.11.0",
+    "@playwright/test": "^1.56.1",
+    "@tailwindcss/postcss": "^4.1.17",
+    "@types/node": "^24.10.0",
+    "@types/pg": "^8.15.6",
+    "@types/qrcode": "^1.5.6",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "eslint": "^9.39.1",
+    "eslint-config-next": "^16.0.0",
+    "prisma": "^7.0.0",
+    "tailwindcss": "^4.1.17",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.8"
+  }
+}

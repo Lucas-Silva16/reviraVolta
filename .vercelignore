@@ -1,0 +1,16 @@
+.env
+.env.*
+.local/
+.git/
+.agents/
+.codex/
+.vercel/
+.next/
+.next-test/
+node_modules/
+src/generated/
+coverage/
+playwright-report/
+test-results/
+*.tsbuildinfo
+*.log
