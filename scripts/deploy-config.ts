@@ -1,4 +1,4 @@
-export function deploymentErrors(env: NodeJS.ProcessEnv): string[] {
+export function deploymentErrors(env: Readonly<Record<string, string | undefined>>): string[] {
   const errors: string[] = [];
   const vercelHost = env.VERCEL === '1' ? (env.VERCEL_ENV === 'preview' ? env.VERCEL_URL : env.VERCEL_PROJECT_PRODUCTION_URL) : undefined;
   const origin = env.APP_ORIGIN || (vercelHost ? `https://${vercelHost}` : '');

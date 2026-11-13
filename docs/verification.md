@@ -54,3 +54,29 @@ Não foi feito deploy externo, teste de HTTPS num alojamento real, execução do
 - Evidência local: `.local/mobile-design-qa.json`, `.local/mobile-design-extra-qa.json` e imagens `.local/mobile-design-*.png`. As imagens do lago e da confirmação identificadas como `fixture` contêm dados simulados de verificação, não resultados do estudo.
 
 A verificação móvel é emulada em Chrome; não substitui um ensaio físico em iPhone/Android ou uma auditoria manual completa de acessibilidade. A separação entre superfícies neutras e cores de ação segue a orientação de [papéis de cor do Material Design](https://m3.material.io/styles/color/roles); a paleta é uma adaptação própria ao projeto.
+## Preparação Vercel — 13/11/2026
+
+- Node 24, configuração de build Vercel, pool PostgreSQL com `attachDatabasePool`, origem HTTPS automática a partir das variáveis Vercel e exclusão dos ficheiros locais de segredos.
+- Verificação prévia de configuração, TLS, migrações e permissões de aplicação/leitura. As migrações são executadas separadamente do build com o proprietário.
+- Limite de login partilhado em PostgreSQL: concorrência, expiração da janela e recusa de acesso pelo papel de leitura verificadas numa base temporária.
+- Retenção diária autenticada por `CRON_SECRET`; testes para pedidos sem segredo, segredo incorreto, HEAD sem efeitos, preview bloqueado, repetição segura e preservação de registos recentes.
+- Resultados: **46 testes unitários, 13 de integração e 4 E2E aprovados**, ESLint aprovado e build Next.js com `VERCEL=1` aprovado, incluindo TypeScript e a verificação de ausência de segredos no bundle público.
+- As duas migrações e os privilégios foram também aplicados à base local de desenvolvimento. Os dados de verificação ficaram exclusivamente nas bases temporárias, eliminadas pelo runner.
+- A primeira execução restrita encontrou um erro de permissões do Windows em `os.userInfo`; a suite completa foi executada com êxito fora desse ambiente restrito. O build foi corrigido após uma incompatibilidade de tipo do validador com a extensão de `ProcessEnv` do Next.js.
+- A ligação a um PostgreSQL externo e a execução real na Vercel ainda dependem da criação da base e da importação das variáveis. O erro de build apresentado pelo utilizador corresponde à verificação que recusa credenciais em falta. Não foi realizado deploy externo por este agente.
+
+## Ligação ao Neon — 13/11/2026
+
+- Projeto `flat-smoke-66509485`, organização `org-cool-firefly-34838818`, branch `production`, região Frankfurt: identidade confirmada pela API autenticada do Neon. A base foi inspecionada antes da configuração e não continha tabelas públicas nem os papéis da aplicação.
+- `neon init` concluído: contexto local ligado, skill Neon instalado e MCP do Codex configurado com OAuth e limitado ao projeto. As ligações foram guardadas em ficheiros locais ignorados pelo Git; o `.env` de desenvolvimento foi restaurado após a importação.
+- As duas migrações Prisma foram aplicadas à base `neondb`. Os papéis `reviravolta_app` e `reviravolta_reader` foram criados com as permissões previstas; as ligações de runtime usam pooling e `sslmode=verify-full`.
+- Verificação real com `checkDatabase`: TLS, esquema, linha técnica do limite de login e privilégios mínimos passaram nos dois papéis. O validador também confirmou os endereços, segredos independentes e configuração administrativa. A origem pública fica por verificar quando a Vercel fornecer o domínio de produção.
+- Nenhum enchimento de teste foi inserido na base Neon; a contagem final foi zero. A aplicação normal e o PostgreSQL local permaneceram ativos.
+- `.local/vercel.env` está pronto para importar em **Production**. A CLI Vercel rejeitou a credencial disponível como inválida; as variáveis não foram importadas nessa conta e não foi executado um novo deploy externo.
+
+## Publicação Vercel — 13/11/2026
+
+- Após autenticação do utilizador, o projeto `revira-volta` foi confirmado como ligado a `Lucas-Silva16/reviraVolta`. Variáveis importadas apenas em Production, com credenciais marcadas como sensíveis; Node.js ajustado para 24.
+- Verificação completa `check:deploy` aprovada com a configuração externa. Build remoto, TypeScript e verificação de segredos no bundle aprovados. Deployment `dpl_2yd2kR762k8qLx7V9M7uKZ11mSZL` em estado READY, publicado pela CLI a partir da versão local.
+- Endereço público: https://revira-volta.vercel.app. GET `/`, `/privacidade` e `/impacto`: HTTP 200 com conteúdo da aplicação, sem autenticação Vercel. POST `/api/session` com a origem pública e GET `/api/impacto` com o cookie criado: HTTP 200; consulta ao Neon efetuada em runtime. Nenhum enchimento de teste inserido.
+- A correção local de tipos de `scripts/deploy-config.ts` foi incluída neste deploy, mas permanece por enviar ao GitHub. O fluxo de escrita, login administrativo e cron não foram novamente exercitados no alojamento público.

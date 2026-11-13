@@ -110,4 +110,8 @@ Previews exigem base e segredos separados, `DATA_MODE=development` e `APP_ORIGIN
 
 ## Estado da preparação
 
-O código, os testes, os ficheiros de configuração e o guia estão preparados. A criação do projeto Vercel, a base externa, a configuração das variáveis na conta e a publicação são operações posteriores. Não foi executado um deploy externo nem validada uma ligação ao fornecedor PostgreSQL nesta preparação.
+A base externa Neon foi ligada em 13/11/2026. As duas migrações foram aplicadas e as ligações dos papéis de aplicação e leitura foram verificadas com TLS, esquema e permissões mínimas. O ficheiro `.local/vercel.env` já contém os endereços e segredos prontos para importar no ambiente **Production** da Vercel; `.local/vercel-database.env` conserva a ligação direta do proprietário apenas para administração local.
+
+Depois de o utilizador autenticar a CLI Vercel, as variáveis foram importadas em **Production** e o projeto foi configurado para Node.js 24. O deploy da versão local foi concluído em 13/11/2026 e está disponível em **https://revira-volta.vercel.app**. `APP_ORIGIN` permanece vazia para usar o domínio de produção fornecido pela Vercel; a criação de sessão nesse domínio e a consulta de impacto ao Neon responderam com sucesso. A configuração local de desenvolvimento foi preservada.
+
+O deploy foi feito pela CLI a partir da pasta local. A correção de tipos em `scripts/deploy-config.ts` ainda não foi enviada ao GitHub; deve acompanhar a próxima atualização do repositório para os builds automáticos usarem a mesma correção.
