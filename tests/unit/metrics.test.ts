@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { calculateMetrics, recordsCsv, weekKey, type ResearchRow } from '@/lib/metrics';
+import { courseFamily } from '@/lib/config';
 const A = '00'.padEnd(64, '0'), B = '01'.padEnd(64, '0');
 const rows: ResearchRow[] = [
   { token_hash: A, curso: 'Biologia', quantidade_litros: 0.5, created_at: new Date('2026-11-13T12:00:00Z') },
@@ -27,4 +28,16 @@ describe('métricas reais e exportação', () => {
   });
   it('semanas começam à segunda-feira UTC, incluindo passagem do ano', () => { expect(weekKey(new Date('2027-01-01'))).toBe('2026-12-28'); });
   it('não inventa utilizadores ou médias na ausência de dados', () => { const data = calculateMetrics([], new Date('2026-11-13'), new Date('2026-12-04')); expect(data.totals.participants).toBe(0); expect(data.totals.meanRefills).toBe(0); expect(data.daily).toEqual([]); });
+  it('agrupa licenciatura, mestrado e doutoramento pelo nome base do curso', () => {
+    const groupedRows: ResearchRow[] = [
+      { token_hash: A, curso: 'Engenharia Informática', quantidade_litros: 1, created_at: new Date('2026-11-13T12:00:00Z') },
+      { token_hash: B, curso: 'Mestrado em Engenharia Informática', quantidade_litros: 2, created_at: new Date('2026-11-13T13:00:00Z') },
+      { token_hash: '02'.padEnd(64, '2'), curso: 'Doutoramento em Engenharia Informática', quantidade_litros: 3, created_at: new Date('2026-11-13T14:00:00Z') },
+    ];
+    expect(courseFamily('Mestrado em Engenharia Informática')).toBe('Engenharia Informática');
+    expect(courseFamily('Doutoramento em Engenharia Informática')).toBe('Engenharia Informática');
+    const data = calculateMetrics(groupedRows, new Date('2026-11-13'), new Date('2026-12-04'), new Date('2026-11-15'));
+    expect(data.league).toHaveLength(1);
+    expect(data.league[0]).toMatchObject({ course: 'Engenharia Informática', participants: 3, refills: 3, liters: 6 });
+  });
 });

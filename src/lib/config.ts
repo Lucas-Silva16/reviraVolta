@@ -1,6 +1,15 @@
 import courseGroups from '../../config/courses.json';
 export const COURSE_GROUPS: readonly { label: string; courses: readonly string[] }[] = courseGroups;
 export const COURSES: readonly string[] = COURSE_GROUPS.flatMap(group => group.courses);
+
+export function courseFamily(course: string): string {
+  return course.replace(/^(?:Mestrado|Doutoramento)\s+em\s+/iu, '').trim();
+}
+
+export function coursesInFamily(course: string): readonly string[] {
+  const family = courseFamily(course);
+  return COURSES.filter(candidate => courseFamily(candidate) === family);
+}
 export const VOLUMES = [0.33, 0.5, 0.75, 1, 1.5, 2] as const;
 export const LIMITS = { minLiters: 0.1, maxLiters: 5, intervalSeconds: 45, perDay: 20, litersPerDay: 20 } as const;
 export const HYPOTHESIS = 'Adicionar progresso coletivo por curso aumenta o número médio de enchimentos registados por participante durante o período de observação.';

@@ -1,6 +1,6 @@
 import 'server-only';
 import { db } from './db';
-import { LIMITS, retainedSince, settings } from './config';
+import { LIMITS, retainedSince, settings, courseFamily, coursesInFamily } from './config';
 import { submissionRecordId, variantFor } from './crypto';
 import { AppError } from './errors';
 import type { z } from 'zod';
@@ -51,13 +51,15 @@ export async function individualImpact(hash: string) {
   if (!last) return { variant, ...individual, collective: { visible: false as const, minimum: cfg.minParticipants } };
   const since = new Date(Math.max(+retainedSince(), cfg.dataMode === 'study' ? +cfg.start : 0));
   const until = cfg.dataMode === 'study' ? cfg.end : new Date();
+  const course = courseFamily(last.curso);
+  const familyCourses = coursesInFamily(course);
   const [result] = await db().$queryRaw<{ people: bigint; liters: number }[]>`
     SELECT COUNT(DISTINCT token_hash) AS people, COALESCE(SUM(quantidade_litros), 0)::float8 AS liters
-    FROM enchimentos WHERE curso = ${last.curso} AND created_at >= ${since} AND created_at < ${until}
+    FROM enchimentos WHERE curso = ANY(${familyCourses}::text[]) AND created_at >= ${since} AND created_at < ${until}
     AND get_byte(decode(token_hash, 'hex'), 0) % 2 = 1`;
   if (Number(result.people) < cfg.minParticipants) return { variant, ...individual, collective: { visible: false as const, minimum: cfg.minParticipants } };
   // Intervalos de 5 L limitam a precisão pública. Não são garantia de anonimato.
   const liters = Math.floor(result.liters / 5) * 5;
-  return { variant, ...individual, collective: { visible: true as const, course: last.curso, liters, goal: cfg.courseGoal, minimum: cfg.minParticipants } };
+  return { variant, ...individual, collective: { visible: true as const, course, liters, goal: cfg.courseGoal, minimum: cfg.minParticipants } };
 }
 export type Impact = Awaited<ReturnType<typeof individualImpact>>;

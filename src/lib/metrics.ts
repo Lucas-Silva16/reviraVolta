@@ -1,4 +1,5 @@
 import { variantFor, type Variant } from './crypto';
+import { courseFamily } from './config';
 export type ResearchRow = { token_hash: string; curso: string; quantidade_litros: number; created_at: Date };
 export const dayKey = (date: Date) => date.toISOString().slice(0, 10);
 export function weekKey(date: Date) {
@@ -38,7 +39,10 @@ export function calculateMetrics(rows: ResearchRow[], start: Date, end: Date, no
   const daily = periods(dayKey), weekly = periods(weekKey);
   const observedSpanDays = selected.length ? (+new Date(Math.max(...selected.map(r => +r.created_at))) - +new Date(Math.min(...selected.map(r => +r.created_at)))) / 86400000 : 0;
   const leagueMap = new Map<string, ResearchRow[]>();
-  for (const row of selected) { const key = `${weekKey(row.created_at)}|${row.curso}`; leagueMap.set(key, [...(leagueMap.get(key) || []), row]); }
+  for (const row of selected) {
+    const key = `${weekKey(row.created_at)}|${courseFamily(row.curso)}`;
+    leagueMap.set(key, [...(leagueMap.get(key) || []), row]);
+  }
   const league = [...leagueMap.entries()].map(([key, records]) => { const [week, course] = key.split('|'); return { week, course, ...summarize(records, asOf) }; }).sort((a, b) => b.week.localeCompare(a.week) || b.liters - a.liters);
   return { totals, groups, daily, weekly, league, start: start.toISOString(), end: end.toISOString(), asOf: asOf.toISOString(), observedSpanDays, activeDays: daily.length, deltaMeanRefills: groups.B.meanRefills - groups.A.meanRefills };
 }
