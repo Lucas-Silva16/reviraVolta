@@ -1,6 +1,7 @@
 import 'server-only';
 import { reader } from './db';
-import { retainedSince, settings } from './config';
+import { courseFamily, retainedSince, settings } from './config';
+import { variantFor } from './crypto';
 import { calculateMetrics, type ResearchRow } from './metrics';
 export async function researchSnapshot() {
   const cfg = settings();
@@ -17,6 +18,8 @@ export async function researchSnapshot() {
         league: metrics.league.filter(r => r.participants >= cfg.minParticipants),
         minimum: cfg.minParticipants, recruitmentAttestation: cfg.recruitment || null,
         generatedAt: new Date().toISOString(),
+        // Registo cronológico (mais recente primeiro) para o docente; sem token_hash.
+        log: records.map(r => ({ at: r.created_at.toISOString(), curso: r.curso, family: courseFamily(r.curso), liters: r.quantidade_litros, group: variantFor(r.token_hash) })).reverse(),
       },
     };
   }, { isolationLevel: 'RepeatableRead', timeout: 15000 });

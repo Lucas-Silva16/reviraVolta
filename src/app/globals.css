@@ -262,6 +262,25 @@ tbody tr:last-child td, tbody tr:last-child th { border-bottom: 0; }
 .chart-column { min-width: 36px; flex: 1; max-width: 80px; text-align: center; font-size: 12px; }
 .chart-column > div { background: var(--primary); border-radius: 5px 5px 0 0; margin: 5px auto; width: 80%; }
 .chart-column small { font-size: 11px; color: var(--muted); }
+.day-picker { display: flex; gap: 8px; overflow-x: auto; padding: 14px 0 6px; }
+.day-picker button { flex: none; border: 1px solid var(--line); background: var(--white); color: inherit; border-radius: 999px; padding: 7px 13px; font: inherit; font-size: 13px; cursor: pointer; white-space: nowrap; }
+.day-picker button small { color: var(--muted); margin-left: 4px; }
+.day-picker button.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+.day-picker button.active small { color: inherit; opacity: .85; }
+.log-summary { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-top: 12px; font-size: 14px; color: var(--muted); }
+.log-summary strong { color: var(--ink); }
+.log-subtitle { font-size: 15px; margin: 22px 0 8px; }
+.hour-chart { display: grid; grid-template-columns: repeat(24, minmax(10px, 1fr)); gap: 3px; align-items: end; min-height: 140px; overflow-x: auto; }
+.hour-column { text-align: center; font-size: 10px; display: flex; flex-direction: column; justify-content: flex-end; }
+.hour-column > div { background: var(--primary); border-radius: 3px 3px 0 0; margin: 3px 1px; }
+.hour-column small { font-size: 10px; color: var(--muted); min-height: 13px; }
+.course-bars { display: grid; gap: 8px; }
+.course-bar { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(60px, 2fr) auto; gap: 10px; align-items: center; font-size: 13px; }
+.course-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.course-track { background: var(--line); border-radius: 4px; height: 10px; overflow: hidden; }
+.course-track > div { background: var(--primary); height: 100%; border-radius: 4px; }
+.course-value { color: var(--muted); white-space: nowrap; }
+.log-table { max-height: 420px; }
 .research-limitations { margin-top: 28px; max-width: 900px; }
 .research-limitations h2 { font-size: 24px; margin-bottom: 12px; }
 .research-limitations p { font-size: 14px; color: var(--muted); line-height: 1.85; margin-top: 10px; }
